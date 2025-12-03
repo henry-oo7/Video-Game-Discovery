@@ -1,5 +1,7 @@
 import {useState,useEffect,useRef} from "react";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
 function App() {
     const [searchTerm, setSearchTerm] = useState("")
     const [games, setGames] = useState([])
@@ -57,7 +59,7 @@ function App() {
             gameIds: favorites.map(fav => fav.id), // ✅ Fixed camelCase
         };
 
-        fetch("http://localhost:8080/users/favorites", {
+        fetch(`${API_BASE}/users/favorites`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -80,7 +82,7 @@ function App() {
 
     const fetchRecommendations = (id) => {
         setIsRecsLoading(true);
-        fetch(`http://localhost:8080/users/recommendations?visitorId=${id}`)
+        fetch(`${API_BASE}/users/recommendations?visitorId=${id}`)
             .then(res => res.json())
             .then(data => {
                 setRecommendations(data);
@@ -98,7 +100,7 @@ function App() {
 
     useEffect(() => {
         if (visitorId) {
-            fetch(`http://localhost:8080/users/has-voted?visitorId=${visitorId}`)
+            fetch(`${API_BASE}/users/has-voted?visitorId=${visitorId}`)
                 .then(response => response.json())
                 .then(alreadyVoted => {
                     if (alreadyVoted) {
@@ -106,7 +108,7 @@ function App() {
                         setShowWelcome(false); // <--- 🚀 AUTO-SKIP for returning users!
 
                         // ... (keep your existing fetch favorites/recs logic here) ...
-                        fetch(`http://localhost:8080/users/favorites?visitorId=${visitorId}`)
+                        fetch(`${API_BASE}/users/favorites?visitorId=${visitorId}`)
                             .then(res => res.json())
                             .then(data => setFavorites(data))
                             .catch(err => console.error(err));
@@ -138,8 +140,8 @@ function App() {
     useEffect(() => {
         const fetchFilters = async () => {
             try {
-                const genreRes = await fetch("http://localhost:8080/videogames/genres");
-                const platformRes = await fetch("http://localhost:8080/videogames/platforms");
+                const genreRes = await fetch(`${API_BASE}/videogames/genres`);
+                const platformRes = await fetch(`${API_BASE}/videogames/platforms`);
 
                 const genres = await genreRes.json();
                 const platforms = await platformRes.json();
@@ -159,7 +161,7 @@ function App() {
 
         const controller = new AbortController();
         const signal = controller.signal;
-        const url = new URL("http://localhost:8080/videogames");
+        const url = new URL(`${API_BASE}/videogames`);
 
         url.searchParams.append("page", page);
         url.searchParams.append("size", 20);
@@ -198,14 +200,14 @@ function App() {
     }
     useEffect(() => {
         if (visitorId) {
-            fetch(`http://localhost:8080/users/has-voted?visitorId=${visitorId}`)
+            fetch(`${API_BASE}/users/has-voted?visitorId=${visitorId}`)
                 .then(response => response.json())
                 .then(alreadyVoted => {
                     if (alreadyVoted) {
                         sethasVoted(true);
 
                         // 1. Restore their Top 5 Picks
-                        fetch(`http://localhost:8080/users/favorites?visitorId=${visitorId}`)
+                        fetch(`${API_BASE}/users/favorites?visitorId=${visitorId}`)
                             .then(res => res.json())
                             .then(data => setFavorites(data))
                             .catch(err => console.error(err));
