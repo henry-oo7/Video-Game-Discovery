@@ -70,7 +70,7 @@ This project is actively evolving. The next phase of development focuses on tran
 
 ```mermaid
 graph TD
-    User[User / Browser] -->|HTTP Request| CloudFront[AWS CloudFront / S3]
-    CloudFront -->|API Calls| EC2[AWS EC2 (Spring Boot)]
-    EC2 -->|SQL Queries| RDS[(AWS RDS MySQL)]
-    EC2 -->|External API| IGDB[IGDB / Twitch API]
+    User[User / Browser] -->|HTTP Request| CloudFront["AWS CloudFront / S3"]
+    CloudFront -->|API Calls| EC2["AWS EC2 (Spring Boot)"]
+    EC2 -->|SQL Queries| RDS[("AWS RDS MySQL")]
+    EC2 -->|External API| IGDB["IGDB / Twitch API"]
