@@ -58,7 +58,8 @@ public class VideoGameService {
 
     //the big get games method
     //added a cache to speed up resetting queries and going back to the main games
-    @Cacheable(value = "landingPage", key = "'defaultGames'", condition = "#name == null && #genre == null && #platform == null && #pageable.pageNumber == 0")
+    // We change 'defaultGames' to 'trendingGames2025' to force Java to run the query again
+    @Cacheable(value = "landingPage", key = "'trendingGamesV3'", condition = "#name == null && #genre == null && #platform == null && #pageable.pageNumber == 0")
     public Page<VideoGame> getGames(String name, String genre, String platform, Pageable pageable) {
 
         boolean hasFilters = (genre != null && !genre.isEmpty()) || (platform != null && !platform.isEmpty());

@@ -1,6 +1,6 @@
 import {useState,useEffect,useRef} from "react";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080";
+export const API_BASE = "http://52.15.66.44:8080";
 
 function App() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -382,24 +382,30 @@ function App() {
             </div>
 
             {/* 2. Top 5 Showcase Bar */}
-            <div className="fixed bottom-6 inset-x-0 mx-auto z-50 w-max max-w-[90rem] bg-slate-800/95 backdrop-blur-md p-4 rounded-3xl shadow-2xl border border-slate-600/50 transition-all duration-300 hover:shadow-cyan-500/20 hover:scale-[1.01]">
-                <div className="flex items-center gap-6">
+            <div className="fixed bottom-6 inset-x-0 mx-auto z-50 w-[96%] md:w-max max-w-[90rem] bg-slate-800/95 backdrop-blur-md p-2 md:p-4 rounded-3xl shadow-2xl border border-slate-600/50 transition-all duration-300 hover:shadow-cyan-500/20 hover:scale-[1.01]">
+                {/* Justify-between helps spread items on tiny screens, centered on desktop */}
+                <div className="flex items-center justify-between md:justify-center gap-2 md:gap-6">
 
+                    {/* Desktop Only: Trophy Icon (Unchanged) */}
                     <div className="hidden md:flex flex-col justify-center items-center px-5 border-r border-slate-600/50 h-full">
                         <span className="text-3xl leading-none">🏆</span>
                         <span className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">Picks</span>
                     </div>
 
-                    <div className="flex gap-4">
+                    {/* Game Slots Container */}
+                    {/* Changed: gap-1.5 for mobile, gap-4 for desktop */}
+                    <div className="flex gap-1.5 md:gap-4 flex-1 md:flex-none justify-center">
                         {[...Array(5)].map((_, index) => {
                             const game = favorites[index];
                             return (
                                 <div
                                     key={index}
-                                    className="flex flex-col items-center gap-1.5 w-24 md:w-28 group"
+                                    // Changed: w-11 (44px) on mobile, w-28 (112px) on desktop
+                                    className="flex flex-col items-center gap-1.5 w-11 sm:w-14 md:w-28 group"
                                     onClick={() => !hasVoted && game && toggleFavorites(game)}
                                 >
-                                    <div className={`relative w-full aspect-[3/4] rounded-xl overflow-hidden flex items-center justify-center transition-all duration-200 border-2 ${
+                                    {/* Aspect Ratio Box */}
+                                    <div className={`relative w-full aspect-[3/4] rounded-lg md:rounded-xl overflow-hidden flex items-center justify-center transition-all duration-200 border-2 ${
                                         game
                                             ? `border-cyan-500 shadow-lg bg-slate-900 ${!hasVoted ? "cursor-pointer" : ""}`
                                             : "border-slate-600 bg-slate-900/40 border-dashed"
@@ -410,65 +416,74 @@ function App() {
 
                                                 {!hasVoted && (
                                                     <div className="absolute inset-0 bg-black/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition backdrop-blur-[1px]">
-                                                        <span className="text-red-500 font-bold text-4xl">×</span>
+                                                        {/* Smaller 'X' on mobile */}
+                                                        <span className="text-red-500 font-bold text-xl md:text-4xl">×</span>
                                                     </div>
                                                 )}
                                             </>
                                         ) : (
-                                            <span className="text-slate-600 font-bold text-2xl">{index + 1}</span>
+                                            /* Smaller Number on mobile */
+                                            <span className="text-slate-600 font-bold text-lg md:text-2xl">{index + 1}</span>
                                         )}
                                     </div>
 
-                                    <div className="h-8 w-full flex items-start justify-center">
-                            <span className={`text-[10px] md:text-xs font-medium text-center leading-tight line-clamp-2 ${game ? "text-slate-200 group-hover:text-cyan-400 transition-colors" : "invisible"}`}>
-                                {game ? game.name : "Placeholder"}
-                            </span>
+                                    {/* Game Title Under Slot */}
+                                    <div className="h-6 md:h-8 w-full flex items-start justify-center">
+                                        {/* Smaller font (8px) on mobile, original (xs) on desktop */}
+                                        <span className={`text-[8px] md:text-xs font-medium text-center leading-tight line-clamp-2 ${game ? "text-slate-200 group-hover:text-cyan-400 transition-colors" : "invisible"}`}>
+                                            {game ? game.name : "Placeholder"}
+                                        </span>
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
 
+                    {/* Action Button Area */}
                     <div className={`flex flex-col justify-center overflow-hidden transition-all duration-500 ease-in-out ${
                         favorites.length === 5 || hasVoted
-                            ? "max-w-[200px] opacity-100 ml-2 border-l border-slate-600/50 px-6"
+                            // Changed: Smaller max-width and padding on mobile
+                            ? "max-w-[100px] md:max-w-[200px] opacity-100 ml-1 md:ml-2 border-l border-slate-600/50 pl-2 md:px-6"
                             : "max-w-0 opacity-0"
                     }`}>
                         {hasVoted ? (
                             <div className="flex flex-col items-center gap-1 w-full">
-                    <span className="text-green-400 font-bold text-xs uppercase tracking-widest text-center whitespace-nowrap">
-                        Thanks for voting!
-                    </span>
+                                <span className="text-green-400 font-bold text-[8px] md:text-xs uppercase tracking-widest text-center whitespace-nowrap">
+                                    {/* Shortened text for mobile */}
+                                    <span className="md:hidden">Done!</span>
+                                    <span className="hidden md:inline">Thanks for voting!</span>
+                                </span>
 
                                 {isRecsLoading ? (
-                                    <div className="text-cyan-400 text-xs animate-pulse font-bold uppercase py-2 text-center whitespace-nowrap">
-                                        Generating...
+                                    <div className="text-cyan-400 text-[10px] md:text-xs animate-pulse font-bold uppercase py-2 text-center whitespace-nowrap">
+                                        Loading...
                                     </div>
                                 ) : (
                                     <button
                                         onClick={() => setIsRecsOpen(true)}
-                                        className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center gap-2 w-full justify-center whitespace-nowrap"
+                                        className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-2 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center gap-1 md:gap-2 w-full justify-center whitespace-nowrap"
                                     >
-                                        <span className="text-lg">✨</span>
+                                        <span className="text-sm md:text-lg">✨</span>
                                         <div className="flex flex-col items-start leading-none">
-                                            <span className="text-[9px] uppercase font-bold text-blue-200">For You</span>
-                                            <span className="text-xs font-bold">View Recs</span>
+                                            <span className="hidden md:inline text-[9px] uppercase font-bold text-blue-200">For You</span>
+                                            <span className="text-[10px] md:text-xs font-bold">Recs</span>
                                         </div>
                                     </button>
                                 )}
                             </div>
                         ) : (
-                            <div className="w-32 mx-auto flex items-center">
+                            <div className="w-full md:w-32 mx-auto flex items-center">
                                 <button
-                                    className="w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-200"
+                                    className="w-full py-2 md:py-2.5 rounded-lg md:rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-200 px-1"
                                     onClick={submitFavorites}
                                 >
-                                    Confirm Picks
+                                    {/* "Confirm" on mobile, "Confirm Picks" on desktop */}
+                                    <span className="md:hidden">Confirm</span>
+                                    <span className="hidden md:inline">Confirm Picks</span>
                                 </button>
                             </div>
                         )}
                     </div>
-
                 </div>
             </div>
 

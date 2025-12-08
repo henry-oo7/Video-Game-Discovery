@@ -9,6 +9,7 @@ import com.henry.videogamedata.Repository.PlatformRepository;
 import com.henry.videogamedata.api.IGDBClient;
 import com.henry.videogamedata.Repository.VideoGameRepository;
 import com.henry.videogamedata.constant.PlatformConstants;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,7 @@ public class VideoGameSyncService {
 
     //enable scheduling to allow to refreash games list every 24 hours
     @Scheduled(fixedRate = 86_400_000)
+    @CacheEvict(value = "trendingGamesV3", allEntries = true)
     public void syncGames(){
         HashMap<String, Genre> genreMap = new HashMap<>();
         HashMap<String, Platform> platformMap = new HashMap<>();
@@ -101,6 +103,7 @@ public class VideoGameSyncService {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
+            System.out.println("completed syncing all games");
         }
     }
 
