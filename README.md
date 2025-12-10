@@ -4,7 +4,7 @@
 
 > **A full-stack application designed to help users discover, curate, and receive personalized video game recommendations.**
 
-[**View Live Demo**](http://henry-videogamedata-frontend-2025.s3-website.us-east-2.amazonaws.com/)
+[**View Live Demo**](https://videogamerecs.link/)
 
 ---
 
