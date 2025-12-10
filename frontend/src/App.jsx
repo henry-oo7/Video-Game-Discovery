@@ -7,16 +7,16 @@ function App() {
     const [games, setGames] = useState([])
     const [filters, setFilters] = useState({genre: null, platform: null})
     const [visitorId] = useState(() => {
-        // 1. Try to read from storage
+        
         let savedId = localStorage.getItem("visitorId");
 
-        // 2. If missing, generate and save immediately
+        
         if (!savedId) {
             savedId = crypto.randomUUID();
             localStorage.setItem("visitorId", savedId);
         }
 
-        // 3. Return the value to React State
+        
         return savedId;
     });
     const [favorites, setFavorites] = useState([])
@@ -54,9 +54,9 @@ function App() {
         }
 
         const payload = {
-            visitorId: visitorId, // ✅ Fixed spelling
+            visitorId: visitorId, 
             name: userName,
-            gameIds: favorites.map(fav => fav.id), // ✅ Fixed camelCase
+            gameIds: favorites.map(fav => fav.id), 
         };
 
         fetch(`${API_BASE}/users/favorites`, {
@@ -105,9 +105,9 @@ function App() {
                 .then(alreadyVoted => {
                     if (alreadyVoted) {
                         sethasVoted(true);
-                        setShowWelcome(false); // <--- 🚀 AUTO-SKIP for returning users!
+                        setShowWelcome(false); 
 
-                        // ... (keep your existing fetch favorites/recs logic here) ...
+                        
                         fetch(`${API_BASE}/users/favorites?visitorId=${visitorId}`)
                             .then(res => res.json())
                             .then(data => setFavorites(data))
@@ -233,8 +233,8 @@ function App() {
             }
         }, {
             threshold: 0.1,
-            rootMargin: "500px" // <--- ADD THIS! ⚡️
-            // This says: "Trigger when the watcher is within 500px of the screen"
+            rootMargin: "500px" 
+            
         });
 
         if (loaderRef.current) {
