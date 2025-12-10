@@ -1,6 +1,6 @@
 import {useState,useEffect,useRef} from "react";
 
-export const API_BASE = "http://52.15.66.44:8080";
+export const API_BASE = "https://videogamerecs.link";
 
 function App() {
     const [searchTerm, setSearchTerm] = useState("")

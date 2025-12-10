@@ -23,8 +23,6 @@ public class RecommendationService {
         this.videoGameRepository = videoGameRepository;
     }
 
-
-    //generates a reccomended games list based on a combination of matching genres, platforms, and bonus points for if the game is rated highly
     public List<VideoGame> getRecommendedVideoGameList(String visitorId) {
         User user = userRepository.findUserByUserIdentifier(visitorId).orElse(null);
         if (user == null || user.getFavoriteGames().isEmpty()) {
@@ -33,42 +31,67 @@ public class RecommendationService {
 
         List<VideoGame> favoritesGameList = user.getFavoriteGames();
 
-        Set<Genre> likedGenres = new HashSet<>();
-        Set<Platform> likedPlatforms = new HashSet<>();
+
+        Map<Integer, Integer> genreWeights = new HashMap<>();
+        Map<Integer, Integer> platformWeights = new HashMap<>();
+        Set<Genre> searchGenres = new HashSet<>();
         List<Integer> excludedIds = new ArrayList<>();
 
-        for (VideoGame videoGame : favoritesGameList) {
-            likedGenres.addAll(videoGame.getGenres());
-            likedPlatforms.addAll(videoGame.getPlatforms());
-            excludedIds.add(videoGame.getId());
+        for (VideoGame fav : favoritesGameList) {
+            excludedIds.add(fav.getId());
+
+
+            for (Genre g : fav.getGenres()) {
+                genreWeights.put(g.getId(), genreWeights.getOrDefault(g.getId(), 0) + 1);
+                searchGenres.add(g);
+            }
+
+            for (Platform p : fav.getPlatforms()) {
+                platformWeights.put(p.getId(), platformWeights.getOrDefault(p.getId(), 0) + 1);
+            }
         }
 
-        List<VideoGame> recommendedVideoGames = videoGameRepository.findRecommendationCandidates(new ArrayList<>(likedGenres),excludedIds, PageRequest.of(0,50));
 
-        Map<VideoGame, Double> scores = new HashMap<>();
+        List<VideoGame> candidates = videoGameRepository.findRecommendationCandidates(
+                new ArrayList<>(searchGenres),
+                excludedIds,
+                PageRequest.of(0, 100)
+        );
 
-        for (VideoGame videoGame : recommendedVideoGames) {
+
+        Map<VideoGame, Double> scoredCandidates = new HashMap<>();
+
+        for (VideoGame game : candidates) {
             double score = 0.0;
 
-            for (Genre genre : likedGenres) {
-                if (likedGenres.contains(genre)) {
-                    score+=2;
+
+            for (Genre g : game.getGenres()) {
+                int frequency = genreWeights.getOrDefault(g.getId(), 0);
+                if (frequency > 0) {
+                    score += (frequency * 3.0);
                 }
             }
-            for (Platform platform : likedPlatforms) {
-                if (likedPlatforms.contains(platform)) {
-                    score+=1;
+
+
+            for (Platform p : game.getPlatforms()) {
+                int frequency = platformWeights.getOrDefault(p.getId(), 0);
+                if (frequency > 0) {
+                    score += (frequency * 1.0);
                 }
             }
-            if (videoGame.getTotalRating() != null) {
-                score += (videoGame.getTotalRating() / 100.0);
+
+
+            if (game.getTotalRating() != null) {
+                score += (game.getTotalRating() / 10.0);
             }
-            scores.put(videoGame, score);
+
+            scoredCandidates.put(game, score);
         }
 
-        return scores.entrySet().stream()
-                .sorted((a,b) -> Double.compare(b.getValue(),a.getValue()))
-                .limit(5)
+
+        return scoredCandidates.entrySet().stream()
+                .sorted((a, b) -> Double.compare(b.getValue(), a.getValue())) // Sort High to Low
+                .limit(5) // Take Top 5
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
